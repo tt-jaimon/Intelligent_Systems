@@ -1,0 +1,157 @@
+// ~->[DNET-1]->~
+
+// File created by someone at MonashU using Netica 4.02 on Apr 24, 2009 at 15:30:50.
+
+bnet rental2 {
+AutoCompile = TRUE;
+autoupdate = TRUE;
+whenchanged = 1240551047;
+
+visual V2 {
+	defdispform = BELIEFBARS;
+	nodelabeling = TITLE;
+	NodeMaxNumEntries = 50;
+	nodefont = font {shape= "Arial"; size= 10;};
+	linkfont = font {shape= "Arial"; size= 9;};
+	windowposn = (28, 28, 921, 603);
+	resolution = 72;
+	drawingbounds = (1227, 720);
+	showpagebreaks = FALSE;
+	usegrid = TRUE;
+	gridspace = (6, 6);
+	NodeSet Node {BuiltIn = 1; Color = 0xc0c0c0;};
+	NodeSet Nature {BuiltIn = 1; Color = 0xf8eed2;};
+	NodeSet Deterministic {BuiltIn = 1; Color = 0xd3caa6;};
+	NodeSet Finding {BuiltIn = 1; Color = 0xc8c8c8;};
+	NodeSet Constant {BuiltIn = 1; Color = 0xffffff;};
+	NodeSet ConstantValue {BuiltIn = 1; Color = 0xffffb4;};
+	NodeSet Utility {BuiltIn = 1; Color = 0xffbdbd;};
+	NodeSet Decision {BuiltIn = 1; Color = 0xdee8ff;};
+	NodeSet Documentation {BuiltIn = 1; Color = 0xf0fafa;};
+	NodeSet Title {BuiltIn = 1; Color = 0xffffff;};
+	PrinterSetting A {
+		margins = (1270, 1270, 1270, 1270);
+		landscape = FALSE;
+		magnify = 1;
+		};
+	};
+
+node Income {
+	kind = NATURE;
+	discrete = TRUE;
+	chance = CHANCE;
+	states = (high, medium, low);
+	parents = ();
+	probs = 
+		// high         medium       low          
+		  (0.1,         0.7,         0.2);
+	numcases = 1;
+	whenchanged = 1240550892;
+	belief = (0.1, 0.7, 0.2);
+	visual V2 {
+		center = (138, 132);
+		height = 1;
+		};
+	};
+
+node Housing_prices {
+	kind = NATURE;
+	discrete = TRUE;
+	chance = CHANCE;
+	states = (high, low);
+	parents = ();
+	probs = 
+		// high         low          
+		  (0.5,         0.5);
+	whenchanged = 1240551047;
+	belief = (0.5, 0.5);
+	visual V2 {
+		center = (396, 126);
+		height = 2;
+		};
+	};
+
+node Property_area {
+	kind = NATURE;
+	discrete = TRUE;
+	chance = CHANCE;
+	states = (good, fair, poor);
+	parents = (Income, Housing_prices);
+	probs = 
+		// good         fair         poor            // Income Housing_prices 
+		(((0.5,         0.3,         0.2),           // high   high           
+		  (0.7,         0.2,         0.1)),          // high   low            
+		 ((0.3,         0.4,         0.3),           // medium high           
+		  (0.2,         0.4,         0.4)),          // medium low            
+		 ((0.1,         0.5,         0.4),           // low    high           
+		  (0.4,         0.4,         0.2)));         // low    low            ;
+	numcases = 1;
+	whenchanged = 1240550983;
+	belief = (0.285, 0.395, 0.32);
+	visual V2 {
+		center = (264, 318);
+		height = 4;
+		};
+	};
+
+node Rent_charged {
+	kind = NATURE;
+	discrete = TRUE;
+	chance = CHANCE;
+	states = (high, low);
+	parents = ();
+	probs = 
+		// high         low          
+		  (0.5,         0.5);
+	numcases = 1;
+	whenchanged = 1060576337;
+	belief = (0.5, 0.5);
+	visual V2 {
+		center = (666, 126);
+		height = 3;
+		};
+	};
+
+node Tenant {
+	kind = NATURE;
+	discrete = TRUE;
+	chance = CHANCE;
+	states = (yes, no);
+	parents = (Rent_charged, Housing_prices);
+	probs = 
+		// yes          no              // Rent_charged Housing_prices 
+		(((0.7,         0.3),           // high         high           
+		  (0.4,         0.6)),          // high         low            
+		 ((0.9,         0.1),           // low          high           
+		  (0.6,         0.4)));         // low          low            ;
+	whenchanged = 1240551002;
+	belief = (0.65, 0.35);
+	visual V2 {
+		center = (546, 318);
+		height = 5;
+		link 1 {
+			path = ((650, 154), (566, 286));
+			};
+		};
+	};
+
+node Happiness {
+	kind = NATURE;
+	discrete = TRUE;
+	chance = CHANCE;
+	states = (yes, no);
+	parents = (Tenant);
+	probs = 
+		// yes          no             // Tenant 
+		 ((0.8,         0.2),          // yes     
+		  (0.2,         0.8));         // no      ;
+	numcases = 1;
+	whenchanged = 1240551011;
+	belief = (0.59, 0.41);
+	visual V2 {
+		center = (864, 318);
+		height = 6;
+		};
+	};
+ElimOrder = (Happiness, Rent_charged, Tenant, Income, Housing_prices, Property_area);
+};
